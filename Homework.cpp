@@ -1,63 +1,93 @@
 #include <iostream>
-#include <iomanip> 
-
-// Завдання 1 //
-
-/* Ваш вік - тут я використаю зминну  unsigned short int, бо це невелике невід'ємне число.
-
-Площа вашого заднього двору - float (але можна і double для більшої точності, але тут мені це не потрібно )
-бо площа може містити десяткові дроби.
-
-Кількість зірок у галактиці - це дуже велике число, тому я буду використовувати змінну  long long.
-
-Середній рівень випадання опадів за січень - double, для більшої точності.
-*/
-
-// Завдання 2 //
 
 using namespace std;
 
-int main() {
-   unsigned short int myAge = 28;
-   cout << "My age: " << myAge << endl;
+ // Завдання 1 //
 
-   float a = 20.8;
-   float yardArea = a * a;
-   cout << "Yard area: " << yardArea << endl;
+int main ()
+{ 
+   int myAge = 28;
+   int yourAge = 32;
 
-   long long starsPerClusterInGalaxy = 1000000;
-   long long clusterInGalaxy = 150;
-   long long allStarsInGalaxy = starsPerClusterInGalaxy * clusterInGalaxy;
-   cout << "Stars in Galaxy: " << allStarsInGalaxy << endl;
+   if (myAge > yourAge)
+  {
+    myAge = yourAge;
+  }
+else
+{
+   yourAge = myAge;
+}
+cout << " My age = " << myAge << endl;
+cout << " Your age = " << yourAge << endl;
+
+return 0;
    
-   double weekOne = 39.11;
-   double weekTwo = 44.67;
-   double weekThree = 41.23;
-   double weekFour = 47.35;
+} 
 
-   double average = (weekOne + weekTwo + weekThree + weekFour)/4;
-   cout << "Average percipitation for January: " << average << endl;
+// Завдання 2 //
 
-   // Завдання 3 // 
+int main()
+{
 
-   // Варіант 1://
+int a, b, c;
+cout << "Please enter three numbers) \n";
 
-    const double  PI = 3.14159265358979311600; // можна long double //
+cout << "a: ";
+cin >> a;
 
-    /* Варіант 2 з підключенням бібліотекі #include <numbers>
-    const double PI = std::numbers::pi; */
-    cout << fixed << setprecision(20);
-    cout << "Pi = " << PI << endl; 
+cout << "\nb: ";
+cin >> b;
 
-    /* я трохи змінила код для цього завдання, щоб мені змогло вивести число більше ніж дозволяє cout після коми
-тому я додала бібліотеку iomanip, яка дозволила мені використати setprecision, і тепер число виводсться через cout як Pi = 3.14159265358979311600
-*/
-// Завдання 4 //
+cout << "\nc: ";
+cin >> c;
 
-float Pi = PI;
-cout << "F Pi = " << Pi << endl;
-
-   return 0;
- // виведуться трохи різні цифри, бо float втрачає точнисть на 7ому знаці //
+if (c = (a - b)) 
+   cout << "\na: ";
+   cout << a;
+   cout << " minus b: ";
+   cout << b;
+   cout << " equals c: ";
+   cout << c << endl;
 
 }
+
+else
+
+   cout << "a - b does not equal c: " << endl;
+   
+return 0;
+} 
+
+/* Тут присвоєння замість порівняння, с присвоює результат а - b
+тому умова завжди буде true, якщо a-b не дорівнює 0.  Яке б ціле число ми не ввели для с, результат буде перезаписан та нам буде видаваться результат віднімання а та b.
+при a - b = 0, компілятор буде виводити результат, який вказан в умові else. */
+
+
+// Завдання 3 //
+
+/* Якщо запустити попередню програму та ввести значення a=20, b=10, c=50,
+то нам видасть результат  a: 20 minus b: 10 equals c: 10, тому що програма проігнорувала 
+умову else та перезаписала значення с, і порахувала як 20-10=10, тож с = 10. */
+
+// Завдання 4 //
+
+int main()
+
+{
+   int a = 1, b = 1, c;
+
+	if (c = (a - b)) // можна додати дужки і копілято не буде видавати попередження: ((c = (a - b)))
+  
+
+    	cout << "The value of c is: " << c;
+
+	return 0;
+
+}
+/* Тож с не ініціализоване в 77 строці, але в if присвоюється значення a - b. Відбувається присвоєння с = 0 і умова if не виконується бо с=0 false, в нас немає else
+тож програма просто завершується.
+*/
+
+// Завдання 5 //
+ /* Програма видала попередження з приводу присвоєння с, тому що тут присвоєння =, а не порівняння == і не додані ще одні дужки ()
+Ще в результаті було нічого так як: в нас є присвоєння с, с завжди буде = 0, це буде завжди false, програма завершується бо в нас немає else. */

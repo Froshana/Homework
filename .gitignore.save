@@ -1,0 +1,2 @@
+cd "/Users/pavloyushchuk/Desktop/HomeworkProject/" && g++ Homework.cpp -o Homework && "/Users/pavloyushchuk/Desktop/HomeworkProject/"Homework
+

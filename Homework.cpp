@@ -1,100 +1,119 @@
 #include <iostream>
 using namespace std;
 
-// Завдання 1-2 //
+// Завдання 1 //
 
-unsigned long int Perimeter (unsigned short int length, unsigned short int width)
+int Rise_to_power (int a, int b)
 {
-   return 2 * (length + width); 
-}
-
-int main ()
-{
-   unsigned short int length, width;
-
-   cout << "Enter length: ";
-   cin >> length;
-
-   cout << "Enter width: ";
-   cin >> width;
-
-   unsigned long int result = Perimeter (length,width);
-
-   cout << "Perimeter = " << result << endl;
-
-  return 0;
-} 
-
-// Завдання 3 //
-
-#include <iostream>
-using namespace std;
-
-void myFunc(unsigned short int x); // функція void не повертає значення, краще замінити void на unsigned short int //
-int main()
-{
-    unsigned short int x, y;
-    y = myFunc(int); // неправильний виклик функціі,  ми передаємо змінну, а не тип, правильно буде так y = myFunc(x) //
-    cout << "x: " << x << "y: " << y << "\n"; // x не була ініціалізована, можна або присвоїти їй число, або задопомоги cin взяти число від користувача //
-// немає return 0; яка повідомляє операційній системі, що програма завершилася успішно //
-}
-void myFunc(unsigned short int x) //  функція myFunc оголошена, як void, як я писала треба замінити на unsigned short int umyFunc(unsigned short int x), або int //
-{
-    return (4 * x);
-}
-
-
-// Завдання 4 //
-
-#include <iostream>
-using namespace std;
-
-int myFunc(unsigned short int x); 
-
-int main()
-{
-    unsigned short int x, y;
-    y = myFunc(x);
-    cout << "x: " << x << " y: " << y << "\n"; // неініціалізована х, або треба оголосити або отримати через cin //
-    // немає return 0;
-}
-
-int myFunc(unsigned short int x); // функція неправильно реалізована, крапка з комою закривє функцію //
-{
-    return (4 * x); // не обовязково тут ставити дужки, але можна і з ними //
-}
-
-
-// Завдання 5-6 //
-
-int piypiy (unsigned short int x, unsigned short int y)
-{
-if (y != 0) 
-   return x / y;
-
+if (b == 0)
+      return 1;
 else
-   return -1; 
+   return a * Rise_to_power(a, b - 1);
 }
 
 int main ()
 {
-   unsigned short int x,y;
-
-   cout << "Enter first number: ";
-   cin >> x;
-
-   cout << "Enter second number: ";
-   cin >> y;
+   int a, b;
    
-   int result = piypiy(x,y);
+   cout << "Enter a number: ";
+   cin >> a;
+   
+   cout << "Enter the exponent: ";
+   cin >> b;
 
-if (result == -1)
-   cout << "Error! " << endl;
+   int result = Rise_to_power (a, b);
+   cout << a << " raised to the power " << b << " is " << result << endl;
+   
+   return 0;
+}
 
-else 
-   cout << "Result is: " << result << endl;
 
-// скобки в умовах if та else я не забула, а проігнорувала, бо в мене є тільки один оператор cout, то їх можна не ставити, бо немає чого групурувати //
-return 0;
+// Завдання 2-6 //
 
+class Employee 
+{
+private:
+   int age;
+   int years_of_service;
+   int salary;
+
+public:
+void set_info (int a, int b)
+{
+   age = a;
+   years_of_service = b;
+   calculate_salary ();
+}
+
+void calculate_salary ()
+{
+   int base = 3000;
+   int bonus = years_of_service * 100;
+   salary = base + bonus;
+}
+
+void get_info ()
+{
+  cout << "Age: " << age << " | Years of service: " << years_of_service << " | Salary " << salary << endl;
+}
+
+int salary_in_thousand ()
+{
+   int round_salary = ((salary + 5) / 10) * 10;
+   return round_salary / 1000;
+}
+
+};
+
+int main ()
+{
+Employee one;
+   one.set_info (32, 5);
+   one.get_info ();
+   cout << "Salary: " << one.salary_in_thousand () << "k" << endl;
+
+Employee two;
+    two.set_info (28, 7);
+    two.get_info ();
+cout << "Rounded salary: " << two.salary_in_thousand () << "k" << endl;
+
+   return 0;
+}
+
+
+
+// Завдання 7 //
+
+class Square
+{
+public:
+    int Side;
+} // тут повінна бути крапка з комою ; //
+
+// Завдання 8 //
+
+class Cat
+{
+    int GetAge() const; // GetAge() оголошений, але не визначений, немає public тож цей метод зараховується до private //
+   private:
+    int itsAge;
+};
+
+// Завдання 9 //
+
+class TV
+{
+public:
+    void SetStation(int Station);
+    int GetStation() const;
+
+private:
+    int itsStation;
+};
+main() // main  повинна мати тип int //
+{
+    TV myTV;
+    myTV.itsStation = 9; // ми не можемо змінювати напряму itsStation, так як вона у приватному доступі //
+    TV.SetStation(10); // клас TV це тип, а не обєкт //
+    TV myOtherTV(2); // у класі не має конструктора, який приймає int //
 }

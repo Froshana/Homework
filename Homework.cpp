@@ -3,117 +3,87 @@ using namespace std;
 
 // Завдання 1 //
 
-int Rise_to_power (int a, int b)
+Яким буде значення змінної x після завершення циклу 
+for (int x = 0; x < 100; x++)? 
+int x = 0; ініціалізована змінна, x < 100;  умова, що вона не може бути більше 100
+x++ постфіксний інкремент, який спочатку буде повертати значення х, а потім його збільшувати
+Остання ітерація x = 99, але коли х == 99, цикл щене закінчиться, він ще раз виконає х++, і вже коли
+х == 100, то це стане хибою і цикл завершиться.
+
+// Завдання 2 //
+
+int main () 
 {
-if (b == 0)
-      return 1;
-else
-   return a * Rise_to_power(a, b - 1);
+   int zero[10][10];
+
+   for (int x = 0; x < 10; x++)
+   {
+      for (int y = 0; y < 10; y++)
+      {
+         zero[x][y] = 0;
+      }
+   }
+   return 0;
+} 
+
+// Завдання 3 //
+
+int main ()
+{ 
+   for ( int x = 100; x <= 200; x += 2)
+   {
+      cout << " x = " << x << endl;
+   }
+   return 0;
+
 }
+
+// Завдання 4 //
 
 int main ()
 {
-   int a, b;
-   
-   cout << "Enter a number: ";
-   cin >> a;
-   
-   cout << "Enter the exponent: ";
-   cin >> b;
+   int y = 100;
+while (y <= 200)
+   {
+      cout << " y = " << y << endl;
+      y += 2;
+   }
+return 0;
+}
 
-   int result = Rise_to_power (a, b);
-   cout << a << " raised to the power " << b << " is " << result << endl;
+// Завдання 5 //
+
+int main ()
+{
+   int x = 100;
+   do
+      {
+         cout << " x = " << x << endl;
+         x += 2;
+      } 
+   while (x <= 200);
    
    return 0;
 }
 
+//  Завдання 6 //
 
-// Завдання 2-6 //
-
-class Employee 
+int counter = 0;
+while (counter < 10) // немає ще однієї умови, яка буде змінюватися в середині циклу, отже умова завжди буде true, а отже програма буде нескінченна. // 
 {
-private:
-   int age;
-   int years_of_service;
-   int salary;
-
-public:
-void set_info (int a, int b)
-{
-   age = a;
-   years_of_service = b;
-   calculate_salary ();
+	cout << "counter: " << counetr: // неправильно введена назва змінної, немає крапки з комою. //
 }
-
-void calculate_salary ()
-{
-   int base = 3000;
-   int bonus = years_of_service * 100;
-   salary = base + bonus;
-}
-
-void get_info ()
-{
-  cout << "Age: " << age << " | Years of service: " << years_of_service << " | Salary " << salary << endl;
-}
-
-int salary_in_thousand ()
-{
-   int round_salary = ((salary + 5) / 10) * 10;
-   return round_salary / 1000;
-}
-
-};
-
-int main ()
-{
-Employee one;
-   one.set_info (32, 5);
-   one.get_info ();
-   cout << "Salary: " << one.salary_in_thousand () << "k" << endl;
-
-Employee two;
-    two.set_info (28, 7);
-    two.get_info ();
-cout << "Rounded salary: " << two.salary_in_thousand () << "k" << endl;
-
-   return 0;
-}
-
-
-
+ 
 // Завдання 7 //
 
-class Square
-{
-public:
-    int Side;
-} // тут повінна бути крапка з комою ; //
+for (int counter = 0; counter < 10: counter++); // замість ":" треба писати ";" //
+	cout << counter << " "; // змінна counter оголошена в умоваі for, тож вона недоступна після циклу, треба або оголосити змінну перед циклом, або додати в цикл через {} дужки. // 
 
 // Завдання 8 //
 
-class Cat
+int counter = 100;
+while (counter < 10) // цикл не може виповнюватися через логічну помилку бо 100 не може бути < 10, або змінна counter повинна бути меньше 10, або в умові повинен бути більше 100. //
 {
-    int GetAge() const; // GetAge() оголошений, але не визначений, немає public тож цей метод зараховується до private //
-   private:
-    int itsAge;
-};
-
-// Завдання 9 //
-
-class TV
-{
-public:
-    void SetStation(int Station);
-    int GetStation() const;
-
-private:
-    int itsStation;
-};
-main() // main  повинна мати тип int //
-{
-    TV myTV;
-    myTV.itsStation = 9; // ми не можемо змінювати напряму itsStation, так як вона у приватному доступі //
-    TV.SetStation(10); // клас TV це тип, а не обєкт //
-    TV myOtherTV(2); // у класі не має конструктора, який приймає int //
-}
+	cout << "counter now: " << counter;
+	counter--;
+} 

@@ -3,87 +3,62 @@ using namespace std;
 
 // Завдання 1 //
 
-Яким буде значення змінної x після завершення циклу 
-for (int x = 0; x < 100; x++)? 
-int x = 0; ініціалізована змінна, x < 100;  умова, що вона не може бути більше 100
-x++ постфіксний інкремент, який спочатку буде повертати значення х, а потім його збільшувати
-Остання ітерація x = 99, але коли х == 99, цикл щене закінчиться, він ще раз виконає х++, і вже коли
-х == 100, то це стане хибою і цикл завершиться.
+	• int *pOne; // int - тип змінної, на який вказує вказівник, * - символ, який вказує на те, що pOne це вказівник, pOne - назва вказівника //
+	• int vTwo: // vTwo назва змінної типу int //
+	• int *pThree = &vTwo; // вказівнику int *pThree присвоюється адреса змінної vTwo, знак & означає адресу, отже pThree зберігає адресу vTwo //
 
 // Завдання 2 //
 
-int main () 
-{
-   int zero[10][10];
-
-   for (int x = 0; x < 10; x++)
-   {
-      for (int y = 0; y < 10; y++)
-      {
-         zero[x][y] = 0;
-      }
-   }
-   return 0;
-} 
+unsigned short yourAge;
+unsigned short *pyourAge = &yourAge;
 
 // Завдання 3 //
 
-int main ()
-{ 
-   for ( int x = 100; x <= 200; x += 2)
-   {
-      cout << " x = " << x << endl;
-   }
-   return 0;
-
-}
+int number;
+int *pnumber = &number;
+*pnumber = 50;
 
 // Завдання 4 //
 
 int main ()
 {
-   int y = 100;
-while (y <= 200)
-   {
-      cout << " y = " << y << endl;
-      y += 2;
-   }
-return 0;
+   int my_age = 28;
+   int *pmy_age = &my_age;
+   cout << " My age is " << my_age << endl;
+
+   *pmy_age = 30;
+    cout << " Now my age is " << my_age << endl;
+
+   return 0;
 }
 
 // Завдання 5 //
 
-int main ()
+#include <iostream>
+
+using namespace std;
+
+int main()
 {
-   int x = 100;
-   do
-      {
-         cout << " x = " << x << endl;
-         x += 2;
-      } 
-   while (x <= 200);
-   
-   return 0;
+	int *pInt; // використання неініціалізованного вказівника, потрібна змінна на чию адресу буде вказувати вказівник //
+	*pInt = 9;
+	cout << " The value at pInt: "<< *pInt;
+
+	return 0;
 }
 
-//  Завдання 6 //
+// Завдання 6 //
 
-int counter = 0;
-while (counter < 10) // немає ще однієї умови, яка буде змінюватися в середині циклу, отже умова завжди буде true, а отже програма буде нескінченна. // 
+#include <iostream>
+
+using namespace std;
+
+int main()
 {
-	cout << "counter: " << counetr: // неправильно введена назва змінної, немає крапки з комою. //
+	int SomeVariable = 5;
+	cout << "SomeVariable: " << SomeVariable << "\n";
+	int *pVar = &SomeVariable;
+	pVar = 9; // неправильно написаний вказівний, він йде з позначкою *, а без цього символа буде помилкове присвоєння, яке буде ззмінювати сам вказівник //
+	cout << "SomeVariable: " << *pVar << "\n";
+	return 0;
 }
- 
-// Завдання 7 //
-
-for (int counter = 0; counter < 10: counter++); // замість ":" треба писати ";" //
-	cout << counter << " "; // змінна counter оголошена в умоваі for, тож вона недоступна після циклу, треба або оголосити змінну перед циклом, або додати в цикл через {} дужки. // 
-
-// Завдання 8 //
-
-int counter = 100;
-while (counter < 10) // цикл не може виповнюватися через логічну помилку бо 100 не може бути < 10, або змінна counter повинна бути меньше 10, або в умові повинен бути більше 100. //
-{
-	cout << "counter now: " << counter;
-	counter--;
-} 

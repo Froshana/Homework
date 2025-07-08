@@ -3,62 +3,170 @@ using namespace std;
 
 // Завдання 1 //
 
-	• int *pOne; // int - тип змінної, на який вказує вказівник, * - символ, який вказує на те, що pOne це вказівник, pOne - назва вказівника //
-	• int vTwo: // vTwo назва змінної типу int //
-	• int *pThree = &vTwo; // вказівнику int *pThree присвоюється адреса змінної vTwo, знак & означає адресу, отже pThree зберігає адресу vTwo //
+int main (){
+	int num = 50;
+	int& piy = num;
+	int* piypiy = &num;
 
-// Завдання 2 //
+	cout << " Перше число = " << num << endl;
 
-unsigned short yourAge;
-unsigned short *pyourAge = &yourAge;
+	piy = 10;
+	cout << " Число після зміни посилання = " << num << endl;
 
-// Завдання 3 //
+	*piypiy = 30;
+	cout << " Число після зміни вказівника = " << num << endl;
 
-int number;
-int *pnumber = &number;
-*pnumber = 50;
+	return 0;
+}
+
+// Завдання 2 - 3 //
+
+int main (){
+	
+	int varOne = 6;
+	int* const piypiy = &varOne; // Вказівник константний, але значення змінне, тож видає попередження про це //
+
+	*piypiy = 7; // Можна змінити значення, ніяких попереджень компілятора //
+
+	int varTwo = 10;
+	piypiy = &varTwo; // Неможливо змінити адресу константного вказівника //
+
+	return 0;
+}
 
 // Завдання 4 //
 
-int main ()
-{
-   int my_age = 28;
-   int *pmy_age = &my_age;
-   cout << " My age is " << my_age << endl;
-
-   *pmy_age = 30;
-    cout << " Now my age is " << my_age << endl;
-
-   return 0;
-}
+	int *num;
+	{
+		int twonum = 30;
+		num = &twonum;
+	}
+	cout << *num; 
 
 // Завдання 5 //
 
-#include <iostream>
+int twonum = 30;
+int *num = &twonum;
 
-using namespace std;
-
-int main()
-{
-	int *pInt; // використання неініціалізованного вказівника, потрібна змінна на чию адресу буде вказувати вказівник //
-	*pInt = 9;
-	cout << " The value at pInt: "<< *pInt;
-
-	return 0;
-}
+cout << *num;
 
 // Завдання 6 //
 
+int main (){
+	int *num = new int (235);
+	cout << "" << *num << endl; 
+
+return 0; // Ми не звільнили пам'ять, що призводе до витоку //
+}
+
+// Завдання 7 //
+
+int main (){
+	int *num = new int (235);
+	cout << "" << *num << endl; 
+
+	delete num;
+
+	return 0; 
+}
+
+// Завдання 8 //
+
+#include <iostream>
+using namespace std;
+
+class Cat
+{
+public:
+	Cat(int age) { itsAge = age; } //  
+	~Cat() {}
+	int GetAge() const { return itsAge; }
+
+private:
+	int itsAge;
+};
+
+Cat &MakeCat(int age);
+
+int main()
+{
+	int age = 7;
+	Cat Boots = MakeCat(age);
+	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
+	return 0;
+}
+
+Cat &MakeCat(int age)
+{
+	Cat *pCat = new Cat(age);
+	return *pCat; // повертає послання, але не звільняє його, що призводить до витоку пам'яті //
+}
+
+
+// Завдання 9 //
+
 #include <iostream>
 
 using namespace std;
 
+// Варіант перший можна  не повертати посилання на об'єкт через new, а повернути об'єкт за значенням //
+
+class Cat
+{
+public:
+	Cat(int age) { itsAge = age; }
+	~Cat() {}
+	int GetAge() const { return itsAge; }
+
+private:
+	int itsAge;
+};
+
+Cat MakeCat(int age); // певертає об'єкт , а не посилання //
+
 int main()
 {
-	int SomeVariable = 5;
-	cout << "SomeVariable: " << SomeVariable << "\n";
-	int *pVar = &SomeVariable;
-	pVar = 9; // неправильно написаний вказівний, він йде з позначкою *, а без цього символа буде помилкове присвоєння, яке буде ззмінювати сам вказівник //
-	cout << "SomeVariable: " << *pVar << "\n";
+	int age = 7;
+	Cat Boots = MakeCat(age);
+	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
 	return 0;
 }
+
+Cat MakeCat(int age)
+{
+	Cat cat(age);
+	return cat;
+}
+ // або //
+
+#include <iostream>
+using namespace std;
+
+class Cat
+{
+public:
+	Cat(int age) { itsAge = age; }
+	~Cat() {}
+	int GetAge() const { return itsAge; }
+
+private:
+	int itsAge;
+};
+
+Cat &MakeCat(int age);
+
+int main()
+{
+	int age = 7;
+	Cat& Boots = MakeCat(age); // робимо посилання на об'єкт //
+	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
+	delete &Boots; // очищаємо пам'ять //
+	return 0;
+}
+
+Cat &MakeCat(int age)
+{
+	Cat *pCat = new Cat(age);
+	return *pCat;
+}
+

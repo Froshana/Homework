@@ -3,170 +3,276 @@ using namespace std;
 
 // Завдання 1 //
 
-int main (){
-	int num = 50;
-	int& piy = num;
-	int* piypiy = &num;
+class SimpleCircle{
+ public:
+	SimpleCircle (int radius = 1) : itsRadius(radius){}
 
-	cout << " Перше число = " << num << endl;
+	SimpleCircle& operator++(){
+		++itsRadius;
+		return *this;
+	}
+	
+	SimpleCircle operator++(int){
+		SimpleCircle temp = *this;
+		itsRadius++;
+		return temp;
+	}
 
-	piy = 10;
-	cout << " Число після зміни посилання = " << num << endl;
+	int GetRadius() const {return itsRadius;}
 
-	*piypiy = 30;
-	cout << " Число після зміни вказівника = " << num << endl;
+ private:
+	int itsRadius;
+
+};
+
+int main(){
+	SimpleCircle circle(10);
+
+	cout << " Радіус = " << circle.GetRadius() << endl;
+
+	++circle;
+	cout << "" << circle.GetRadius() << endl;
+
+	circle++;
+	cout << "" << circle.GetRadius() << endl;
 
 	return 0;
 }
+// Завдання 2-3 //
 
-// Завдання 2 - 3 //
+class SimpleCircle{
+ public:
+	SimpleCircle(int radius = 1){
+		itsRadius = new int(radius);
+	}
 
-int main (){
-	
-	int varOne = 6;
-	int* const piypiy = &varOne; // Вказівник константний, але значення змінне, тож видає попередження про це //
+	SimpleCircle(const SimpleCircle& other){
+		itsRadius = new int(*other.itsRadius);
+	}
 
-	*piypiy = 7; // Можна змінити значення, ніяких попереджень компілятора //
+	SimpleCircle& operator=(const SimpleCircle& other){
+		if (this != &other) {
+			delet itsRadius;
+			itsradius = new int(*other.itsRadius);
+		}
+		return *this;
+	}
 
-	int varTwo = 10;
-	piypiy = &varTwo; // Неможливо змінити адресу константного вказівника //
+	~SimpleCircle() {
+		delete itsRadius;
+	}
+
+	SimpleCircle operator ++(){
+		++(*itsRadius);
+		return *this;
+	}
+
+	SimpleCircle operator++(int){
+		SimpleCircle temp = *this;
+		++(*itsRadius);
+		return temp;
+	}
+
+	int Getradius() const{
+		return *itsRadius;
+	}
+
+ private:
+	int* itsRadius;
+};
+
+int main(){
+	SimpleCircle circle(10);
+
+	cout << " Радіус = " << circle.GetRadius() << endl;
+
+	++circle;
+	cout << "" << circle.GetRadius() << endl;
+
+	circle++;
+	cout << "" << circle.GetRadius() << endl;
 
 	return 0;
 }
 
 // Завдання 4 //
 
-	int *num;
-	{
-		int twonum = 30;
-		num = &twonum;
+class SimpleCircle{
+ public:
+	SimpleCircle(int radius = 1){
+		itsRadius = new int(radius);
 	}
-	cout << *num; 
+
+	SimpleCircle(const SimpleCircle& other){
+		itsRadius = new int(*other.itsRadius);
+	}
+
+	SimpleCircle& operator=(const SimpleCircle& other){
+		if (this != &other){
+			delete itsRadius;
+			itsRadius = new int(*other.itsRadius);
+		}
+		return *this;
+	}
+
+	~SimpleCircle(){
+		delete itsRadius;
+	}
+
+ private:
+	int *itsRadius;
+}
+
+int main (){
+	SimpleCircle a(5);
+	SimpleCircle b = a;
+
+	SimpleCircle c;
+	c = a;
+
+	cout << "a radius: " << a.GetRadius() << endl;
+	cout << "b radius: " << b.GetRadius() << endl;
+	cout << "c radius: " << c.GetRadius() << endl;
+
+	return 0;
+}
 
 // Завдання 5 //
 
-int twonum = 30;
-int *num = &twonum;
+class SimpleCircle{
+ public:
+	SimpleCircle(int radius = 1){
+		itsRadius = new int(radius);
+	}
 
-cout << *num;
+	SimpleCircle(const SimpleCircle& other){
+		itsRadius = new int(*other.itsRadius);
+	}
+
+	SimpleCircle& operator=(const SimpleCircle& other){
+		if (this != &other) {
+			delete itsRadius;
+			itsRadius = new int(*other.itsRadius);
+		}
+		return *this;
+	}
+
+	~SimpleCircle() {
+		delete itsRadius;
+	}
+
+	SimpleCircle operator ++(){
+		++(*itsRadius);
+		return *this;
+	}
+
+	SimpleCircle operator++(int){
+		SimpleCircle temp = *this;
+		++(*itsRadius);
+		return temp;
+	}
+
+	int GetRadius() const{
+		return *itsRadius;
+	}
+
+ private:
+	int* itsRadius;
+};
+
+int main (){
+	SimpleCircle circle1;
+	SimpleCircle circle2(9);
+
+	++circle1;
+	cout << "circle1: " << circle1.GetRadius() << endl;
+
+	circle2++;
+	cout << "circle2: " << circle2.GetRadius() << endl;
+
+
+	circle1 = circle2;
+	cout << "circle1: " << circle1.GetRadius() << endl;
+
+
+	return 0;
+}
 
 // Завдання 6 //
 
-int main (){
-	int *num = new int (235);
-	cout << "" << *num << endl; 
-
-return 0; // Ми не звільнили пам'ять, що призводе до витоку //
-}
+SQUARE SQUARE::operator=(const SQUARE &rhs)
+{
+	itsSide = new int; // якщо є динамічна пам'ть, то потрібно реалізувати конструктор копіювання, оператор прісвоєння та деструктор, тут не очіщається стара пам'ять, повертає об'єкт за значенням, а не за посиланням
+	*itsSide = rhs.GetSide();
+	return *this: // потрібно поставити ; замість :
+}   
 
 // Завдання 7 //
 
-int main (){
-	int *num = new int (235);
-	cout << "" << *num << endl; 
-
-	delete num;
-
-	return 0; 
-}
+VeryShort VeryShort::operator+(const VeryShort &rhs)
+{
+	itsVal += rhs.GetItsVal(); // змінює об'єкт непраильно, хоча по ідеї має створити новий
+	return *this; // його ж повертає
+}   
 
 // Завдання 8 //
 
-#include <iostream>
-using namespace std;
-
-class Cat
-{
-public:
-	Cat(int age) { itsAge = age; } //  
-	~Cat() {}
-	int GetAge() const { return itsAge; }
-
-private:
-	int itsAge;
+class Shape {
+ public:
+	void ShowType(){
+		cout << "Фігура." << endl;
+	}
 };
 
-Cat &MakeCat(int age);
+class Rectangle : public Shape {
+ public:
+	void ShowType(){
+		cout << "Прямокутник." << endl;
+	}
+};
 
-int main()
-{
-	int age = 7;
-	Cat Boots = MakeCat(age);
-	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
+class Square : public Rectangle {
+ public:
+	void ShowType(){
+		cout << "Квадрат." << endl;
+	}
+};
+
+int main (){
+	Square sq;
+	sq.ShowType();
+
 	return 0;
 }
-
-Cat &MakeCat(int age)
-{
-	Cat *pCat = new Cat(age);
-	return *pCat; // повертає послання, але не звільняє його, що призводить до витоку пам'яті //
-}
-
 
 // Завдання 9 //
 
-#include <iostream>
-
-using namespace std;
-
-// Варіант перший можна  не повертати посилання на об'єкт через new, а повернути об'єкт за значенням //
-
-class Cat
-{
-public:
-	Cat(int age) { itsAge = age; }
-	~Cat() {}
-	int GetAge() const { return itsAge; }
-
-private:
-	int itsAge;
+class Shape {
+ public:
+	Shape(){};
+	void ShowType(){
+		cout << "Фігура." << endl;
+	}
 };
 
-Cat MakeCat(int age); // певертає об'єкт , а не посилання //
-
-int main()
-{
-	int age = 7;
-	Cat Boots = MakeCat(age);
-	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
-	return 0;
-}
-
-Cat MakeCat(int age)
-{
-	Cat cat(age);
-	return cat;
-}
- // або //
-
-#include <iostream>
-using namespace std;
-
-class Cat
-{
-public:
-	Cat(int age) { itsAge = age; }
-	~Cat() {}
-	int GetAge() const { return itsAge; }
-
-private:
-	int itsAge;
+class Rectangle : public Shape {
+ public:
+	Rectangle(int length, int width){}
+	void ShowType(){
+		cout << "Прямокутник." << endl;
+	}
 };
 
-Cat &MakeCat(int age);
+class Square : public Rectangle {
+ public:
+ 	Square(int length) : Rectangle(length, length){}
+	void ShowType(){
+		cout << "Квадрат." << endl;
+	}
+};
 
-int main()
-{
-	int age = 7;
-	Cat& Boots = MakeCat(age); // робимо посилання на об'єкт //
-	cout << "Boots is: " << Boots.GetAge() << " years old" << endl;
-	delete &Boots; // очищаємо пам'ять //
+int main (){
+	Square s(5);
+
 	return 0;
 }
-
-Cat &MakeCat(int age)
-{
-	Cat *pCat = new Cat(age);
-	return *pCat;
-}
-

@@ -1,128 +1,159 @@
-// Завдання 1-2 //
+/**
 #include <iostream>
 using namespace std;
 
-class Rocket {
+class Vehicle {
  public:
-	Rocket(double m, double f) : mass(m), fuelAmount(f){}
+	Vehicle() {}
+	virtual ~Vehicle() {}
 
-	void Setmass (double m) { mass = m;}
-	void SetFuel (double f) {fuelAmount = f;}
+	virtual void Speed() { cout << "Vehicle is moving..." << endl; }	
+	virtual void Sound() = 0;
 
-	double GetMass() const {return mass;}
-	double GetFuel() const {return fuelAmount;}
-
-	virtual void Start() {
-		if (fuelAmount > 0) 
-			cout << "Ракета стартує 🚀\n";
-		else
-			cout << "Недостатньо палива\n";
-		}
-	
-	virtual ~Rocket() = default;
-
- private:
-	double mass;
-	double fuelAmount;
-};
-
-class Airplane{
- public:
-	
- Airplane (double s, double a) : speed(s), altitude(a){}
-
- void SetSpeed(double s){speed = s;}
- void SetAltitude(double a){ altitude = a;}
-
- double GetSpeed() const {return speed;}
- double GetAltitude() const {return altitude;}
-
- private:
-	double speed;
-	double altitude;
-};
-
-class Jetplane : public Rocket, public Airplane {
- public:
-	Jetplane(double m, double f, double s, double a)
-	: Rocket(m,f), Airplane(s,a){}
-
-	void Start() override {
-		if (GetFuel() > 0 && GetSpeed() > 0 && GetAltitude() >= 0) {
-			cout << "Jetplane стартує 🛫\n";
-			cout << "Швидкість:" << GetSpeed() << "\nм/с\n";
-			cout << "Висота: "<< GetAltitude() << "\nм\n";
-		} else {
-			cout << "Недостатньо палива або некоректні дані\n";
-		}
-	}
-	
 };
 /*
-int main() {
-	double mass, fuel, speed, altitude;
-	cout << "Введіть масу 🛫Реактівного літака:\n";
-	cin >> mass;
-
-	cout << "Введіть кількість палива 🛫Реактівного літака :\n";
-	cin >> fuel;
-
-	cout << "Введіть швидкість🛫Реактівного літака :\n";
-	cin >> speed;
-
-	cout << "Введіть висоту 🛫Реактівного літака :\n";
-	cin >> altitude;
-
-	Jetplane jp(mass, fuel, speed, altitude);
-	jp.Start();
-
-	return 0;
-} */
-
-class Boeing747 : public Jetplane {
+class Car : public Vehicle {
  public:
-	Boeing747(double m, double f, double s, double a, int passengers)
-		: Jetplane(m,f,s,a), passengerCount(passengers) {}
+	void Speed() override { cout << "The car accelerates to 220 km/h" << endl; }
+	void Sound() override { cout << "Vrun Vrun" << endl; }
+	};
 
-	void BoardPassengers (int count) {
-		passengerCount += count;
-		cout << "На літак сіло " <<count << " пасажирів. Всого: \n" << passengerCount;
-	}
+class Bus : public Vehicle {
+ public:
+	void Speed() override { cout << "The bus accelerates to 150 km/h" << endl; }
+	void Sound() override { cout << "Bzhin Bzhin Bzhin" << endl; }
+};
+int main() {
+	void (Vehicle::*pFunc)() = nullptr;
+	Vehicle* ptr = nullptr;
 
-	void Start() override {
-		if (GetFuel() > 0 && GetSpeed() > 0 && GetAltitude() >= 0 && passengerCount > 0) {
-			cout << "Boeing747 з " << passengerCount << " пасажирами взлітає 🛫\n";
-		} else {
-			cout << "Boeing747 не може старувати. Перевірте паливо, висоту, швидкість або кількість пасажирів.\n" ;
+	int Power;
+	int Transportation;
+	int Method;
+	bool fQuit = false;
+
+	while (!fQuit) {
+		cout << "(0)Quit (1)Car (2)Bus" << endl;
+		cin >> Transportation;
+
+		switch (Transportation) {
+			case 1:
+				ptr = new Car;
+				break;
+			case 2:
+				ptr = new Bus;
+				break;
+			default:
+				fQuit = true;
+				break;
 		}
+
+		if (fQuit)
+			break;
+		
+		cout << "(1)Speed (2)Sound: ";
+		cin >> Method;
+
+		switch (Method) {
+			case 1:
+				pFunc = &Vehicle::Speed;
+				break;
+			default:
+				pFunc = &Vehicle::Sound;
+				break;
+		}
+
+		(ptr->*pFunc)();
+		delete ptr;
 	}
 
+	
+	return 0;
+}
 
- private:
- int passengerCount;
+
+// Завдання 2 // 
+
+class Car : public Vehicle {
+ public:
+	void Speed() override { Vehicle::Speed();
+		cout << "The car accelerates..." << endl;
+	}
+	virtual void Sound() = 0; 
+	virtual ~Car() {}
+};
+
+class SportsCar : public Car {
+	void Speed () override { 
+		Car::Speed();
+		cout << "Max speed is 350 km/h" << endl;
+	}
+	void Sound () override { cout << "Bzzzzzzzzun" << endl; }
+};
+
+class Wagon : public Car {
+	void Speed () override { 
+		Car::Speed();
+		cout << "Max speed is 190 km/h" << endl;
+	}
+	void Sound () override { cout << "Fzhin Fzhin" << endl; }
+};
+
+class Coupe : public Car {
+	void Speed () override { 
+		Car::Speed();
+		cout << "Max speed is 200 km/h" << endl;}
+	void Sound () override { cout << "Biu Biu" << endl; }
 };
 
 int main() {
-	double mass, fuel, speed, altitude;
-	int passengers;
+	Car* cars[3];
+	cars[0] = new SportsCar;
+	cars[1] = new Wagon;
+	cars[2] = new Coupe;
 
-	cout << "Введіть масу 🛫Реактівного літака:\n";
-	cin >> mass;
+	for (int i = 0; i < 3; ++i) {
+		cars[i] -> Speed();
+		cars[i] -> Sound();
+		cout << "------------" << endl;
+		delete cars[i];
+	}
+	return 0;
+} 
+*/
+// Завдання 3 //
 
-	cout << "Введіть кількість палива 🛫Реактівного літака:\n";
-	cin >> fuel;
+#include <iostream>
+using namespace std;
 
-	cout << "Введіть швидкість🛫Реактівного літака:\n";
-	cin >> speed;
+class Car {
+ public:
+	Car (int km) : Speed(km) {
+		Fuel++;
+		cout << "The car drove " << Speed << " km" << endl;
+	}
 
-	cout << "Введіть висоту 🛫Реактівного літака:\n";
-	cin >> altitude;
+	~Car() {
+		Fuel--;
+		cout << "Car stopped. Speed was: " << Speed << ". Now it 0 on speedometer" << endl;
+	}
+	static int GetFuel() {
+		return Fuel;
+	}
 
-	cout << "Введіть кількість пасажирів:\n";
-	cin >> passengers;
+ private:
+ 	int Speed;
+ 	static int Fuel;
+};
 
-	Boeing747 boeing(mass, fuel, speed, altitude, passengers);
-	boeing.Start();
+int Car::Fuel = 0;
 
+int main() {
+	{
+		Car a(100);
+		Car b(200);
+		cout << "Currently fuel count: " << Car::GetFuel() << endl;
+	}
+	cout << "After stop, fuel count: " << Car::GetFuel() << endl;
 	return 0;
 }

@@ -1,159 +1,180 @@
-/**
 #include <iostream>
 using namespace std;
 
-class Vehicle {
+// Завдання 1 //
+
+class Car {
  public:
-	Vehicle() {}
-	virtual ~Vehicle() {}
 
-	virtual void Speed() { cout << "Vehicle is moving..." << endl; }	
-	virtual void Sound() = 0;
-
-};
-/*
-class Car : public Vehicle {
- public:
-	void Speed() override { cout << "The car accelerates to 220 km/h" << endl; }
-	void Sound() override { cout << "Vrun Vrun" << endl; }
-	};
-
-class Bus : public Vehicle {
- public:
-	void Speed() override { cout << "The bus accelerates to 150 km/h" << endl; }
-	void Sound() override { cout << "Bzhin Bzhin Bzhin" << endl; }
-};
-int main() {
-	void (Vehicle::*pFunc)() = nullptr;
-	Vehicle* ptr = nullptr;
-
-	int Power;
-	int Transportation;
-	int Method;
-	bool fQuit = false;
-
-	while (!fQuit) {
-		cout << "(0)Quit (1)Car (2)Bus" << endl;
-		cin >> Transportation;
-
-		switch (Transportation) {
-			case 1:
-				ptr = new Car;
-				break;
-			case 2:
-				ptr = new Bus;
-				break;
-			default:
-				fQuit = true;
-				break;
-		}
-
-		if (fQuit)
-			break;
-		
-		cout << "(1)Speed (2)Sound: ";
-		cin >> Method;
-
-		switch (Method) {
-			case 1:
-				pFunc = &Vehicle::Speed;
-				break;
-			default:
-				pFunc = &Vehicle::Sound;
-				break;
-		}
-
-		(ptr->*pFunc)();
-		delete ptr;
+	Car(int km) : mileage(km) {
+		totalCars++;
+		cout << "Car created. Mileage: " << mileage
+             << " km. Total cars: " << totalCars << endl;
+	}
+	~Car () {
+	totalCars--;
+	cout << "Car destroyed. Mileage was: " << mileage
+             << " km. Remaining cars: " << totalCars << endl;
 	}
 
+	void ShowMileage() const {
+		cout << "Car drove " << mileage << " km." << endl;
+	}
+
+	static int GetTotalCars() {
+		return totalCars;
+	}
+
+ private:
+	int mileage;
+	static int totalCars;
+
+};
+
+int Car::totalCars = 0;
+
+
+int main() {
+	Car a(1000);
+	Car b(2500);
+
+	a.ShowMilеage();
+	b.ShowMilеage();
+
+	cout << "Total cars (inside block): " << Car::GetTotalCars() << endl;
+    cout << "Total cars (after block): " << Car::GetTotalCars() << endl;
+    return 0;
+}
+	
+// Завдання 2 //
+
+int main (){
+	Car* c1 = new Car (1000);
+	Car* c2 = new Car (3500);
+	Car* c3 = new Car (5600);
+
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c1 ---\n";
+	delete c1;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c2 ---\n";
+	delete c2;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c3 ---\n";
+	delete c3;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+		return 0;
+	}
+	
+	// Завдання 3 //
+
+int main (){
+	Car* c1 = new Car (1000);
+	Car* c2 = new Car (3500);
+	Car* c3 = new Car (5600);
+
+
+
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c1 ---\n";
+	delete c1;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c2 ---\n";
+	delete c2;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c3 ---\n";
+	delete c3;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+
+		return 0;
+	} 
+
+// Завдання 4 //
+
+	class Car {
+ public:
+
+	Car(int km) : mileage(km) {totalCars++;}
+	~Car () { totalCars--; }
+
+	int GetMilleage() const {return mileage;}
+	static int GetTotalCars() {return totalCars;}
+
+ private:
+	int mileage;
+	static int totalCars;
+
+};
+
+int Car::totalCars = 0;
+
+int main (){
+	Car* c1 = new Car (1000);
+	Car* c2 = new Car (3500);
+	Car* c3 = new Car (5600);
+	
+	int (Car::*ptc)() const = &Car::GetMilleage;
+
+	cout << "Car 1 mileage: " << (c1->*ptc) () << endl;
+	cout << "Car 2 mileage: " << (c2->*ptc) () << endl; 
+	cout << "Car 3 mileage: " << (c3->*ptc) () << endl; 
+
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c1 ---\n";
+	delete c1;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c2 ---\n";
+	delete c2;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
+	cout << "\n--- Deleting c3 ---\n";
+	delete c3;
+	cout << "\nTotal cars now: " << Car::GetTotalCars() << endl;
 	
 	return 0;
 }
 
-
-// Завдання 2 // 
-
-class Car : public Vehicle {
- public:
-	void Speed() override { Vehicle::Speed();
-		cout << "The car accelerates..." << endl;
-	}
-	virtual void Sound() = 0; 
-	virtual ~Car() {}
-};
-
-class SportsCar : public Car {
-	void Speed () override { 
-		Car::Speed();
-		cout << "Max speed is 350 km/h" << endl;
-	}
-	void Sound () override { cout << "Bzzzzzzzzun" << endl; }
-};
-
-class Wagon : public Car {
-	void Speed () override { 
-		Car::Speed();
-		cout << "Max speed is 190 km/h" << endl;
-	}
-	void Sound () override { cout << "Fzhin Fzhin" << endl; }
-};
-
-class Coupe : public Car {
-	void Speed () override { 
-		Car::Speed();
-		cout << "Max speed is 200 km/h" << endl;}
-	void Sound () override { cout << "Biu Biu" << endl; }
-};
-
-int main() {
-	Car* cars[3];
-	cars[0] = new SportsCar;
-	cars[1] = new Wagon;
-	cars[2] = new Coupe;
-
-	for (int i = 0; i < 3; ++i) {
-		cars[i] -> Speed();
-		cars[i] -> Sound();
-		cout << "------------" << endl;
-		delete cars[i];
-	}
-	return 0;
-} 
-*/
-// Завдання 3 //
-
-#include <iostream>
-using namespace std;
+// Завдання 5 //
 
 class Car {
  public:
-	Car (int km) : Speed(km) {
-		Fuel++;
-		cout << "The car drove " << Speed << " km" << endl;
-	}
 
-	~Car() {
-		Fuel--;
-		cout << "Car stopped. Speed was: " << Speed << ". Now it 0 on speedometer" << endl;
-	}
-	static int GetFuel() {
-		return Fuel;
-	}
+	int years;
+	int horsepower;
+
+	Car(int km, int yr, int hp) : 
+		mileage(km), years(yr), horsepower(hp) {
+		totalCars++;}
+
+	~Car () {totalCars--;}
+
+	int GetMileage() const {return mileage;}
+	static int GetTotalCars() {return totalCars;}
 
  private:
- 	int Speed;
- 	static int Fuel;
+	int mileage;
+	static int totalCars;
 };
+int Car::totalCars = 0;
 
-int Car::Fuel = 0;
+int main (){
+	Car c1(1000, 2020, 150);
+    Car c2(3500, 2021, 180);
+    Car c3(5600, 2019, 140);
 
-int main() {
-	{
-		Car a(100);
-		Car b(200);
-		cout << "Currently fuel count: " << Car::GetFuel() << endl;
-	}
-	cout << "After stop, fuel count: " << Car::GetFuel() << endl;
+    using Field = int Car::*;
+
+    array<Field, 2> fields = { &Car::years, &Car::horsepower };
+    array<const char*, 2> names = { "year", "horsepower" };
+
+    array<Car*, 3> cars = { &c1, &c2, &c3 };
+
+    for (size_t i = 0; i < cars.size(); ++i) {
+        cout << "Car #" << i + 1 << ":\n";
+        for (size_t j = 0; j < fields.size(); ++j) {
+            cout << "  " << names[j] << " = " << cars[i]->*fields[j] << '\n';
+        }
+
+        cout << "  mileage = " << cars[i]->GetMileage() << '\n';
+    }
 	return 0;
 }

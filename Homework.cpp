@@ -1,59 +1,81 @@
-
-#include <iostream>
-#include <string>
-using namespace std;
-
 // Завдання 1 //
 
-int main (){
-	clog << "[INFO] Program started\n";
+#include <iostream>
+#include <fstream>
+#include <cctype>
 
-	cout << "Enter your full name: ";
-	string name;
-	getline(cin,name);
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <filename>\n";
+        return 1;
+    }
 
-	cout << "Enter your age: ";
-	int age;
-	if (!(cin >> age)){
-		cerr << "[ERROR] Invalid input.\n";
-		return 1;
-	}
-	if (age < 0){
-		cerr << "[ERROR] Age cannot be negative.\n";
-		return 1;
-	}
-	clog << "[INFO] Input received; printing greeting...\n";
-    cout << "Hello, " << name << "! You are " << age << " years old.\n";
-    clog << "[INFO] Program finished successfully." << endl;
+    std::ifstream in(argv[1], std::ios::in | std::ios::binary);
+    if (!in) {
+        std::cerr << "Error: cannot open file '" << argv[1] << "'\n";
+        return 2;
+    }
 
-	return 0;
+    int ch;
+    while ((ch = in.get()) != std::char_traits<char>::eof()) {
+        unsigned char uch = static_cast<unsigned char>(ch);
+        if (std::isprint(uch)) {    
+            std::cout << static_cast<char>(uch);
+        }
+    
+    }
+
+    in.close(); 
+    return 0;
 }
 
 // Завдання 2 //
 
-int main() {
-    string name;
-    cout << "Enter your full name: ";
-    getline(cin, name);
-    cout << name << '\n';
+#include <iostream>
+
+int main(int argc, char* argv[]) {
+
+    for (int i = argc - 1; i >= 1; --i) {
+     	std::cout << argv[i];
+        if (i > 1) std::cout << ' ';
+    }
+    std::cout << '\n';
+
     return 0;
 }
 
 // Завдання 3 //
 
-#include <iostream>
+#include <iostream> 
 
-using namespace std;
+int main() { 
+	cout << "Hello world!" << endl; // використання cout без простору імен std
+	
+	return 0; 
+}
 
-#include <iostream>
-using namespace std;
+// Завдання 4 //
 
+// Перший варіант //
+ #include <iostream>
 int main() {
-    char ch;
-    cout << "enter a phrase: ";
-    while (cin.get(ch)) {
-        if (ch == '#') continue;          
-        cout << (ch == '!' ? '$' : ch);     
-    }
+    std::cout << "Hello world!" << std::endl; // додати std::
+    return 0;
+}
+
+// Другий варіант //
+#include <iostream>
+using namespace std; // додати загальне підключення простору імен
+int main() {
+    cout << "Hello world!" << endl;
+    return 0;
+}
+
+// Третіий варіант //
+#include <iostream>
+int main() {
+    using std::cout; // додати локальні using декларації
+    using std::endl;
+    cout << "Hello world!" << endl;
     return 0;
 }

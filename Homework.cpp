@@ -1,715 +1,410 @@
 // Завдання 1 //
 
-#include <iostream>
-#include <string>
+RoadSegment - відрізок дороги між розв'язкою.
+Lane - смуга руху.
+Intersection — вузол з 4 під’їздами.
+Crosswalk — пішохідний перехід.
+TrafficLightController - керування трафіком світлофора.
+SignalPhase - Green/Yellow/Red.
+PedSignal — стан пішохідного сигналу (Walk/Don’tWalk).
+Vehicle - автомобілі.
+Pedestrian - пішшохід.
+Detector - лічильники/датчики на стоп-лініях та на виходах.
+Metrics - збирає середню затримку або дісперсію интервалів між авто.
+Simulation — часова петля tick(dt).
+ 
+struct Agent { virtual void step(double dt) = 0; virtual ~Agent() = default; };
 
+class Vehicle : public Agent {
+  // pos, speed, lane*, desiredSpeed...
+  void step(double dt) override;
+};
 
-template <class T>
-class List
-{
+class Pedestrian : public Agent {
+  // pos, speed, targetCrosswalk...
+  void step(double dt) override;
+};
+
+enum class Light { Green, Yellow, Red };
+struct SignalPhase { Light state; double duration; };
+
+class TrafficLightController {
 public:
-	List() : head(0), tail(0), theCount(0) {}
-	virtual ~List();
-
-	void insert(const T& value);
-	void append(const T& value);
-	int is_present(const T& value) const;
-	int is_empty() const { return head == nullptr;}
-	int count() const { return theCount; }
-
-private:
-	class ListCell
-	{
-    public:
-   
-    	explicit ListCell(const T& value, ListCell *cell = nullptr) : val(value),
-                                              	next(cell) {}
-	T val;
-    ListCell* next;
-};
-	
-    T val;
-    ListCell* next;
-	ListCell *head;
-	ListCell *tail;
-	int theCount;
+  void setPlan(/*cycle, splits, offsets*/);
+  void update(double t);
+  Light phaseFor(int approach) const;
 };
 
-class List
-{
+class Simulation {
+  std::vector<std::unique_ptr<Agent>> agents;
+  TrafficLightController tlc;
 public:
-	List() : head(0), tail(0), theCount(0) {}
-	virtual ~List();
-	void insert(int value);
-	void append(int value);
-	int is_present(int value) const;
-	int is_empty() const
-	{
-    	return head == 0;
-	}
-	int count() const { return theCount; }
-private:
-	class ListCell
-	{
-	public:
-    	ListCell(int value, ListCell *cell = 0) : val(value),
-                                              	next(cell) {}
-    	int val;
-    	ListCell *next;
-	};
-	int val;
-	ListCell *next;
-	ListCell *head;
-	ListCell *tail;
-	int theCount;
+  void tick(double dt);
 };
 
-List::~List() {
-	ListCell* p = head;
-	while (p) {
-		ListCell* n = p->next;
-		delete p;
-		p = n;
-	}
-	head = tail = 0;
-	theCount = 0;
-}
+// Завдання 2 //
 
-void List::insert(int value) {
-	   ListCell* node = new ListCell(value, head);
-    head = node;
-    if (!tail) tail = head;
-    ++theCount;
-}
+Додавання різної поведінки водіїв
 
-void List::append(int value) {
-    ListCell* node = new ListCell(value, 0);
-    if (tail) {
-        tail->next = node;
-        tail = node;
-    } else {
-        head = tail = node;   
-    }
-    ++theCount;
-}
+struct DriverBehavior {
+  virtual double desiredSpeed() const = 0;
+  virtual double headway() const = 0;            
+  virtual double reactionTime() const = 0;
+  virtual bool willRunRed(const TrafficLightController&) const = 0;
+  virtual ~DriverBehavior() = default;
+};
 
-int List::is_present(int value) const {
-    for (ListCell* p = head; p; p = p->next) {
-        if (p->val == value) return 1;
-    }
-    return 0;
-}
+struct TaxiBehavior : DriverBehavior { /* агресивні параметри + p_run_red */ };
+struct NonLocalBehavior : DriverBehavior { /* повільні/обережні */ };
+struct LocalAdaptiveBehavior : DriverBehavior { double coolness; /* адаптація */ };
 
-int main() {
-    List lst;
-    std::cout << "empty " << lst.is_empty() << "\n";
-    lst.insert(10);
-    lst.append(20);
-    lst.insert(5);
-    std::cout << "count = " << lst.count() << "\n";
-    std::cout << "has 20 " << lst.is_present(20) << "\n";
-    std::cout << "has 99 " << lst.is_present(99) << "\n";
-}
+class Vehicle : public Agent {
+  std::unique_ptr<DriverBehavior> behavior;
+  void step(double dt) override;}
+
+  Пішоходи
+ struct PedBehavior {
+ virtual bool willCrossHere(const Crosswalk& cw, /*позиція*/) const = 0;
+virtual bool obeysSignal(const PedSignal& ps) const = 0;
+  virtual double walkSpeed() const = 0;
+  virtual ~PedBehavior() = default;
+ };
+
+struct LocalPed : PedBehavior { /* jaywalk prob > 0, obeysSignal=false інколи */ };
+struct TouristPed : PedBehavior { /* obeysSignal=true, walkSpeed нижчий */ };
+
+class Pedestrian : public Agent {
+std::unique_ptr<PedBehavior> behavior;
+  void step(double dt) override;
+};
+
+Велосипедисти (ненавиджу)
+struct CyclistBehavior {
+  virtual bool  asVehicleNow(/*context*/) const = 0; // перемикач режиму
+  virtual double speedVehicleMode() const = 0;
+  virtual double speedPedMode() const = 0;
+ virtual ~CyclistBehavior() = default;
+};
+
+class Cyclist : public Agent {
+std::unique_ptr<CyclistBehavior> behavior;
+void step(double dt) override; // перемикання режимів і рух
+};
 
 // Завдання 3 //
 
-template <class T>
-class List
-{
-public:
-	List() : head(0), tail(0), theCount(0) {}
-	virtual ~List();
-
-	void insert(const T& value);
-	void append(const T& value);
-	int is_present(const T& value) const;
-	int is_empty() const { return head == nullptr;}
-	int count() const { return theCount; }
-
-private:
-	class ListCell
-	{
-    public:
-   
-    	explicit ListCell(const T& value, ListCell *cell = nullptr) : val(value),
-                                              	next(cell) {}
-	T val;
-    ListCell* next;
-};
-	
-    T val;
-    ListCell* next;
-	ListCell *head;
-	ListCell *tail;
-	int theCount;
-};
-
-
-template <class T>
-List<T>::~List() {
-    ListCell* p = head;
-    while (p) {
-        ListCell* n = p->next;
-        delete p;
-        p = n;
-    }
-    head = tail = 0;
-    theCount = 0;
-}
-
-template <class T>
-void List<T>::insert(const T& value) {
-    ListCell* node = new ListCell(value, head);
-    head = node;
-    if (!tail) tail = head; 
-    ++theCount;
-}
-
-template <class T>
-void List<T>::append(const T& value) {
-    ListCell* node = new ListCell(value, 0);
-    if (tail) {
-        tail->next = node;
-        tail = node;
-    } else {
-        head = tail = node; 
-    }
-    ++theCount;
-}
-
-template <class T>
-int List<T>::is_present(const T& value) const {
-    for (ListCell* p = head; p; p = p->next) {
-        if (p->val == value) return 1;
-    }
-    return 0;
-}
-
-int main() {
-    List<int> a;
-    a.insert(10);
-    a.append(20);
-    a.insert(5);
-
-    std::cout << "count = " << a.count() << "\n";     
-    std::cout << "has 20? " << a.is_present(20) << "\n"; 
-    std::cout << "empty? " << a.is_empty() << "\n";      
-
-    List<std::string> b;
-    b.append(std::string("hello"));
-    b.insert(std::string("world"));
-    std::cout << "has 'hello'? " << b.is_present(std::string("hello")) << "\n"; 
-
-    return 0;
-}
+Основні підсистеми для затосунку, який планує конференції та зустрічі
+ЯДРО
+Управління подіями та календарями :
+Події: зустрічі, конференції тощо.
+Програма подій: доповіді, спікери зали.
+Приміщення: зали, переговорки інше.
+Планувальник розкладу: букати час та подію.
+Оптимізація людей, подій, їжі.
+Реєстрація учасників та слухачів(VIP, співорбітників, персоналу).
+Бронювання: бронювання готелю, подій, автозахват бронювання, якщо хтось відмовиться від участі/слухання
+Платежі: рахунки, оплата, повернення.
+Верификація: смс, по номеру, по пошті тощо.
+Інтеграція: в гугл календар тощо.
+Кабінети: учасника, відвідувача, організатора тощо.
+АНАЛІТИКА
+Аналітика: завантаження залів, скількі зареєстровано відвідувачів та спікерів на різні події, зміна броней, оплата кеш або кредитка тощо.
+ПІДСИСТЕМИ
+пошук по фільтрах подій та готелю.
+Відстежування потрібних подій.
+Нагадування про подію.
+Локалізація для різних країн та валют.
+Сховище данних: кеш(не гроші), SQL, штуки для аналітики.
 
 // Завдання 4 //
-
-template <class T>
-class List
-{
-public:
-	List() : head(0), tail(0), theCount(0) {}
-	virtual ~List();
-
-	void insert(const T& value);
-	void append(const T& value);
-	int is_present(const T& value) const;
-	int is_empty() const { return head == nullptr;}
-	int count() const { return theCount; }
-
-private:
-	class ListCell
-	{
-    public:
-   
-    	explicit ListCell(const T& value, ListCell *cell = nullptr) : val(value),
-                                              	next(cell) {}
-	T val;
-    ListCell* next;
-};
-	
-    T val;
-    ListCell* next;
-	ListCell *head;
-	ListCell *tail;
-	int theCount;
-};
-
-
-template <class T>
-List<T>::~List() {
-    ListCell* p = head;
-    while (p) {
-        ListCell* n = p->next;
-        delete p;
-        p = n;
-    }
-    head = tail = 0;
-    theCount = 0;
-}
-
-template <class T>
-void List<T>::insert(const T& value) {
-    ListCell* node = new ListCell(value, head);
-    head = node;
-    if (!tail) tail = head; 
-    ++theCount;
-}
-
-template <class T>
-void List<T>::append(const T& value) {
-    ListCell* node = new ListCell(value, 0);
-    if (tail) {
-        tail->next = node;
-        tail = node;
-    } else {
-        head = tail = node; 
-    }
-    ++theCount;
-}
-
-template <class T>
-int List<T>::is_present(const T& value) const {
-    for (ListCell* p = head; p; p = p->next) {
-        if (p->val == value) return 1;
-    }
-    return 0;
-}
-
-struct Cat {
-    std::string name;
-};
-
-inline bool operator==(const Cat& a, const Cat& b) {
-    return a.name == b.name;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const Cat& c) {
-    return os << c.name;
-}
-
-int main() {
-    List<int> a;
-    a.insert(10);
-    a.append(20);
-    a.insert(5);
-
-    std::cout << "count = " << a.count() << "\n";
-    std::cout << "has 20 " << a.is_present(20) << "\n";
-    std::cout << "empty " << a.is_empty() << "\n";
-
-    List<std::string> b;
-    b.append(std::string("hello"));
-    b.insert(std::string("world"));
-    std::cout << " 'hello' " << b.is_present(std::string("hello")) << "\n";
-
-    List<Cat> d;
-    Cat fr; fr.name = "Frisky";
-    Cat fe; fe.name = "Felix";
-
-    d.insert(fr);
-    d.append(fe);
-
-    std::cout << "First cat is " << fr.name << " \n";
-    std::cout << "Second cat is " << fe.name << "\n";
-
-	return 0;
-}
-
-// Завдання 5 //
-
-List<Cat> Cat_List;
-Cat Felix;
-CatList.append(Felix); // немає змінної CatList правильно Cat_List;
-cout << "Felix is "
- 	<< (Cat_List.is_present(Felix)) ? " " : " not " // неправильні дужки 
- 	<< "present\n";
-
-	// виправлений варіант //
-List<Cat> Cat_List;
-Cat Felix;
-Felix.name = "Felix";
-Cat_List.append(Felix);
-cout << "Felix is "
-	<< (Cat_List.is_present(Felix) ? "" : "not ")
-	<< "present\n";
-
-	// Завдання 6 //
-template <class T>
-class List
-{ // код якій був вище //
-
-friend bool operator==(const List& a, const List& b) {
-	if (a.theCount != b.theCount) return false;
-    auto pa = a.head;
-    auto pb = b.head;
-    while (pa && pb) {
-        if (!(pa->val == pb->val)) return false; 
-        pa = pa->next;
-        pb = pb->next;
-        }
-    	return true;
-    }
-};
-
-// Завдання 7 //
-
-template <class T>
-class List
-{ // код якій був вище //
-friend bool operator==(const List& a, const List& b) {
-	if (a.theCount != b.theCount) return false;
-    auto pa = a.head;
-    auto pb = b.head;
-    while (pa && pb) {
-        if (!(pa->val == pb->val)) return false; 
-        pa = pa->next;
-        pb = pb->next;
-        }
-    	return true;
-    }
-
-
-friend bool operator!=(const List& a, const List& b) {
-        return !(a == b);
-    }
-};
-
-// Завдання 8 //
-Так,для int порівлювальні елементі працюють завжди а для  типу Cat треба мати визначений operator== для Cat, інакше інстанціювання шаблону впаде на компіляції.
-
-// Завдання 9 //
-
-template <typename T>
-void my_swap_old(T& a, T& b) {
-    T tmp = a;
-    a = b;
-    b = tmp;
-}
-
-int main() {
-	int a = 10;
-	int b = 30;
-
-    std::cout << "before: a = " << a << ", b = " << b << "\n";
-	my_swap_old(a, b);
-    std::cout << "after: a = " << a << ", b = " << b << "\n";
-
-	return 0;
-}
-	
-// Завдання 10 //
-#include <iostream>
+#pragma once
 #include <string>
 #include <vector>
-using namespace std;
+#include <optional>
 
-class Student
-{
-public:
-	Student();
-	Student(const string &name, const int age);
-	Student(const Student &rhs);
-	~Student();
+namespace conf {
 
-	void SetName(const string &name);
-	string GetName() const;
-	void SetAge(const int age);
-	int GetAge() const;
-	Student &operator=(const Student &rhs);
+// ---- Мінімальні типи для сигнатур ----
+using Id = std::string;
+struct TimeRange { std::string startISO; std::string endISO; };
+struct Money { std::string currency; long long minor = 0; }; // 12345 => 123.45
 
-private:
-	string itsName;
-	int itsAge;
+// ========== ЯДРО ==========
+
+// Управління подіями та календарями
+struct IEventCalendar {
+    virtual ~IEventCalendar() = default;
+    virtual Id    createEvent(const std::string& title, const std::string& tz) = 0;
+    virtual bool  updateEvent(const Id& eventId, const std::string& title) = 0;
+    virtual bool  deleteEvent(const Id& eventId) = 0;
+    virtual bool  setEventTime(const Id& eventId, const TimeRange& when) = 0;
+    virtual bool  addToCalendar(const Id& eventId, const Id& calendarId) = 0;
 };
 
-Student::Student()
-	: itsName("New Student"), itsAge(16)
-{
-}
-
-Student::Student(const string &name, const int age) : itsName(name), itsAge(age)
-{
-}
-
-Student::Student(const Student &rhs) : itsName(rhs.GetName()),
-									   itsAge(rhs.GetAge())
-{
-}
-
-Student::~Student()
-{
-}
-
-void Student::SetName(const string &name)
-{
-	itsName = name;
-}
-
-string Student::GetName() const
-{
-	return itsName;
-}
-
-void Student::SetAge(const int age)
-{
-	itsAge = age;
-}
-
-int Student::GetAge() const
-{
-	return itsAge;
-}
-
-Student &Student::operator=(const Student &rhs)
-{
-	itsName = rhs.GetName();
-	itsAge = rhs.GetAge();
-	return *this;
-}
-
-ostream &operator<<(ostream &os, const Student &rhs)
-{
-	os << rhs.GetName() << " is " << rhs.GetAge() << " years old";
-	return os;
-}
-
-template <class T>
-void ShowVector(const vector<T> &v); // Відображає властивості вектора
-
-typedef vector<Student> SchoolClass;
-
-int main()
-{
-	Student Harry;
-	Student Sally("Sally", 15);
-	Student Bill("Bill", 17);
-	Student Peter("Peter", 16);
-
-	SchoolClass EmptyClass;
-	cout << "EmptyClass:\n";
-	ShowVector(EmptyClass);
-
-	SchoolClass GrowingClass(3);
-
-	cout << "GrowingClass(3):\n";
-	ShowVector(GrowingClass);
-	GrowingClass[0] = Harry;
-	GrowingClass[1] = Sally;
-	GrowingClass[2] = Bill;
-	cout << "GrowingClass(3) after assigning students:\n";
-	ShowVector(GrowingClass);
-
-	GrowingClass.push_back(Peter);
-	cout << "GrowingClass() after aded 4ht student:\n";
-	ShowVector(GrowingClass);
-
-	GrowingClass[0].SetName("Harry");
-	GrowingClass[0].SetAge(18);
-	cout << "GrowingClass() after Set:\n";
-	ShowVector(GrowingClass);
-
-	GrowingClass.reserve(GrowingClass.size () + 4);
-	Student Anna("Anna", 16);
-	GrowingClass.push_back(Anna);
-	ShowVector(GrowingClass);
-
-	Student Kate("Kate", 16);
-	GrowingClass.push_back(Kate);
-	ShowVector(GrowingClass);
-
-	Student Pavlo("Pavlo", 16);
-	GrowingClass.push_back(Pavlo);
-	ShowVector(GrowingClass);
-
-	Student Bob("Bob", 16);
-	GrowingClass.push_back(Bob);
-	ShowVector(GrowingClass);
-
-	for (Student& s : GrowingClass) {
-		s.SetAge(s.GetAge() +1);
-	}
-	cout << "After +1 year for everyone:\n";
-	ShowVector(GrowingClass);	
-	return 0;
-}
-
-//
-// Відображає властивості вектора
-//
-template <class T>
-void ShowVector(const vector<T> &v)
-{
-	cout << "max_size() = " << v.max_size();
-	cout << "\tsize() = " << v.size();
-	cout << "\tcapacity() = " << v.capacity();
-	cout << "\t " << (v.empty() ? "empty" : "not empty");
-	cout << "\n";
-	for (int i = 0; i < v.size(); ++i)
-		cout << v[i] << "\n";
-	cout << endl;
-}
-
-// Завдання 10 //
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm> 
-using namespace std;
-
-class Student
-{
-public:
-    Student();
-    Student(const string &name, const int age);
-    Student(const Student &rhs);
-    ~Student();
-
-    void SetName(const string &name);
-    string GetName() const;
-    void SetAge(const int age);
-    int GetAge() const;
-    Student &operator=(const Student &rhs);
-
-private:
-    string itsName;
-    int itsAge;
+// Програма подій: доповіді, спікери, зали
+struct IProgram {
+    virtual ~IProgram() = default;
+    virtual Id   addTalk(const Id& eventId, const std::string& title, const Id& speakerId, const Id& hallId, const TimeRange& slot) = 0;
+    virtual bool updateTalk(const Id& talkId, const std::string& title) = 0;
+    virtual bool moveTalk(const Id& talkId, const Id& hallId, const TimeRange& slot) = 0;
+    virtual Id   addSpeaker(const std::string& name) = 0;
+    virtual Id   addHall(const std::string& name, int capacity) = 0;
 };
 
-Student::Student()
-    : itsName("New Student"), itsAge(16)
-{
-}
-
-Student::Student(const string &name, const int age) : itsName(name), itsAge(age)
-{
-}
-
-Student::Student(const Student &rhs) : itsName(rhs.GetName()),
-                                       itsAge(rhs.GetAge())
-{
-}
-
-Student::~Student()
-{
-}
-
-void Student::SetName(const string &name)
-{
-    itsName = name;
-}
-
-string Student::GetName() const
-{
-    return itsName;
-}
-
-void Student::SetAge(const int age)
-{
-    itsAge = age;
-}
-
-int Student::GetAge() const
-{
-    return itsAge;
-}
-
-Student &Student::operator=(const Student &rhs)
-{
-    itsName = rhs.GetName();
-    itsAge = rhs.GetAge();
-    return *this;
-}
-
-
-ostream &operator<<(ostream &os, const Student &rhs)
-{
-    os << rhs.GetName() << " is " << rhs.GetAge() << " years old";
-    return os;
-}
-
-struct PrintStudent {
-    void operator()(const Student& s) const {
-        cout << s.GetName() << " is " << s.GetAge() << " years old\n";
-    }
+// Приміщення: зали, переговорки інше
+struct IRooms {
+    virtual ~IRooms() = default;
+    virtual Id   createRoom(const std::string& name, int capacity) = 0;
+    virtual bool setEquipment(const Id& roomId, const std::vector<std::string>& items) = 0;
+    virtual bool blockRoom(const Id& roomId, const TimeRange& when, const std::string& reason) = 0;
 };
 
-template <class T>
-void ShowVector(const vector<T> &v); 
+// Планувальник розкладу: букати час та подію
+struct ISchedulePlanner {
+    virtual ~ISchedulePlanner() = default;
+    virtual std::vector<TimeRange> findFreeSlots(const Id& roomId, int minMinutes) const = 0;
+    virtual bool  bookSlot(const Id& eventId, const Id& roomId, const TimeRange& slot) = 0;
+    virtual bool  reschedule(const Id& eventId, const TimeRange& newSlot) = 0;
+};
 
-typedef vector<Student> SchoolClass;
+// Оптимізація людей, подій, їжі
+struct IOptimization {
+    virtual ~IOptimization() = default;
+    virtual bool optimizePeoplePlacement(const Id& eventId) = 0;
+    virtual bool optimizeAgenda(const Id& eventId) = 0;
+    virtual bool optimizeCatering(const Id& eventId) = 0;
+};
 
-int main()
-{
-    Student Harry;
-    Student Sally("Sally", 15);
-    Student Bill("Bill", 17);
-    Student Peter("Peter", 16);
+// Реєстрація учасників та слухачів (VIP, співробітників, персоналу)
+struct IRegistration {
+    virtual ~IRegistration() = default;
+    virtual Id   registerAttendee(const Id& eventId, const std::string& name, const std::string& role /*VIP/Employee/Staff/Listener*/) = 0;
+    virtual bool cancelRegistration(const Id& eventId, const Id& attendeeId) = 0;
+    virtual std::vector<Id> listAttendees(const Id& eventId, const std::optional<std::string>& roleFilter = std::nullopt) const = 0;
+};
 
-    SchoolClass EmptyClass;
-    cout << "EmptyClass:\n";
-    ShowVector(EmptyClass);
+// Бронювання: бронювання подій, автозахват при відмові
+struct IBooking {
+    virtual ~IBooking() = default;
+    virtual Id   bookSeat(const Id& eventId, const Id& attendeeId) = 0;
+    virtual bool cancelSeat(const Id& bookingId) = 0;
+    virtual bool enableAutoCaptureOnCancel(const Id& eventId, bool enable) = 0; // “автозахват бронювання”
+};
 
-    SchoolClass GrowingClass(3);
+// Платежі: рахунки, оплата, повернення
+struct IPayments {
+    virtual ~IPayments() = default;
+    virtual Id   createInvoice(const Id& attendeeId, const Money& total) = 0;
+    virtual bool payInvoice(const Id& invoiceId, const std::string& method /*cash/card*/)=0;
+    virtual bool refund(const Id& invoiceId, const Money& amount) = 0;
+};
 
-    cout << "GrowingClass(3):\n";
-    ShowVector(GrowingClass);
-    GrowingClass[0] = Harry;
-    GrowingClass[1] = Sally;
-    GrowingClass[2] = Bill;
-    cout << "GrowingClass(3) after assigning students:\n";
-    ShowVector(GrowingClass);
+// Верифікація: SMS, по номеру, по пошті
+struct IVerification {
+    virtual ~IVerification() = default;
+    virtual bool sendSMSCode(const std::string& phone) = 0;
+    virtual bool verifySMSCode(const std::string& phone, const std::string& code) = 0;
+    virtual bool sendEmailLink(const std::string& email) = 0;
+    virtual bool verifyEmailToken(const std::string& token) = 0;
+};
 
-    GrowingClass.push_back(Peter);
-    cout << "GrowingClass() after added 4th student:\n";
-    ShowVector(GrowingClass);
+// Інтеграція: в Google Календар тощо
+struct IIntegrations {
+    virtual ~IIntegrations() = default;
+    virtual bool connectGoogleCalendar(const Id& userId, const std::string& oauthToken) = 0;
+    virtual bool syncEventToGoogle(const Id& userId, const Id& eventId) = 0;
+};
 
-    GrowingClass[0].SetName("Harry");
-    GrowingClass[0].SetAge(18);
-    cout << "GrowingClass() after Set:\n";
-    ShowVector(GrowingClass);
+// Кабінети: учасника, відвідувача, організатора
+struct IParticipantCabinet {
+    virtual ~IParticipantCabinet() = default;
+    virtual std::vector<Id> myEvents(const Id& userId) const = 0;
+    virtual bool            updateProfile(const Id& userId, const std::string& name) = 0;
+};
+struct IVisitorCabinet {
+    virtual ~IVisitorCabinet() = default;
+    virtual std::vector<Id> recommendedEvents(const Id& userId) const = 0;
+};
+struct IOrganizerCabinet {
+    virtual ~IOrganizerCabinet() = default;
+    virtual std::vector<Id> managedEvents(const Id& orgUserId) const = 0;
+    virtual bool            publishEvent(const Id& eventId) = 0;
+};
 
-    GrowingClass.reserve(GrowingClass.size() + 4);
-    Student Anna("Anna", 16);
-    GrowingClass.push_back(Anna);
-    ShowVector(GrowingClass);
+// ========== АНАЛІТИКА ==========
+struct IAnalytics {
+    virtual ~IAnalytics() = default;
+    virtual int  hallLoad(const Id& hallId, const TimeRange& range) const = 0; // %
+    virtual int  attendeesCount(const Id& eventId) const = 0;
+    virtual int  speakersCount(const Id& eventId) const = 0;
+    virtual int  bookingChanges(const Id& eventId) const = 0;
+    virtual std::pair<int,int> paymentSplitCashCard(const Id& eventId) const = 0; // {cash, card}
+};
 
-    Student Kate("Kate", 16);
-    GrowingClass.push_back(Kate);
-    ShowVector(GrowingClass);
+// ========== ПІДСИСТЕМИ ==========
+struct ISearch {
+    struct Filter {
+        std::optional<std::string> text;
+        std::optional<std::string> hall;
+        std::optional<std::string> speaker;
+        std::optional<std::string> dateISO;
+    };
+    virtual ~ISearch() = default;
+    virtual std::vector<Id> events(const Filter& f) const = 0; // пошук по фільтрах
+};
 
-    Student Pavlo("Pavlo", 16);
-    GrowingClass.push_back(Pavlo);
-    ShowVector(GrowingClass);
+struct IWatchlist {
+    virtual ~IWatchlist() = default;
+    virtual bool watch(const Id& userId, const Id& eventId) = 0;      // відстежування потрібних подій
+    virtual bool unwatch(const Id& userId, const Id& eventId) = 0;
+    virtual std::vector<Id> list(const Id& userId) const = 0;
+};
 
-    Student Bob("Bob", 16);
-    GrowingClass.push_back(Bob);
-    ShowVector(GrowingClass);
+struct IReminders {
+    virtual ~IReminders() = default;
+    virtual bool schedule(const Id& userId, const Id& eventId, const std::string& whenISO) = 0; // нагадування
+    virtual bool cancel(const Id& userId, const Id& eventId) = 0;
+};
 
+struct ILocalization {
+    virtual ~ILocalization() = default;
+    virtual bool  setLocale(const Id& userId, const std::string& locale, const std::string& currency) = 0;
+    virtual std::string formatMoney(const Money& m, const std::string& locale) const = 0;
+};
 
-    for (Student& s : GrowingClass) s.SetAge(s.GetAge() + 1);
-    cout << "After +1 year for everyone:\n";
-    ShowVector(GrowingClass);
+// Сховище даних: кеш, SQL, штуки для аналітики
+struct ICacheStore {
+    virtual ~ICacheStore() = default;
+    virtual void put(const std::string& key, const std::string& val, int ttlSec) = 0;
+    virtual std::optional<std::string> get(const std::string& key) const = 0;
+};
 
-    return 0;
-}
+struct ISqlStore {
+    virtual ~ISqlStore() = default;
+    virtual bool exec(const std::string& sql) = 0;
+    virtual std::vector<std::vector<std::string>> query(const std::string& sql) const = 0;
+};
 
+struct IAnalyticsStore {
+    virtual ~IAnalyticsStore() = default;
+    virtual bool appendEvent(const std::string& topic, const std::string& jsonPayload) = 0;
+};
 
-template <class T>
-void ShowVector(const vector<T> &v)
-{
-    cout << "max_size() = " << v.max_size();
-    cout << "\tsize() = " << v.size();
-    cout << "\tcapacity() = " << v.capacity();
-    cout << "\t " << (v.empty() ? "empty" : "not empty");
-    cout << "\n";
+} 
+// ==== ГОТЕЛЬ: типи ====
 
-    std::for_each(v.begin(), v.end(), PrintStudent{});
+struct Stay {
+    std::string checkInISO;   // напр. "2025-09-12"
+    std::string checkOutISO;  // напр. "2025-09-15"
+    int adults{1};
+    int children{0};
+};
 
-    cout << endl;
-}
+struct HotelRoomType {
+    Id id;
+    std::string name;                 // "Deluxe King"
+    int capacity{2};
+    std::vector<std::string> features; // Wi-Fi, SeaView, ...
+};
 
+struct HotelRoom {
+    Id id;
+    Id roomTypeId;
+    std::string number;               // "305"
+};
+
+struct HotelRatePlan {
+    Id id;
+    std::string name;                 // "BAR", "Non-Refundable", ...
+    std::string currency{"USD"};
+    bool prepaid{false};
+};
+
+struct HotelQuote {
+    Money roomAmount;  // базова вартість
+    Money taxes;       // податки/збори
+    Money total;       // підсумок
+    std::string currency;
+    Id ratePlanId;
+};
+
+enum class HotelResStatus { Hold, Confirmed, Cancelled };
+
+struct HotelReservation {
+    Id id;
+    Id guestId;
+    Stay stay;
+    Id roomTypeId;
+    std::optional<Id> assignedRoom;   // може бути призначена пізніше
+    Id ratePlanId;
+    HotelResStatus status{HotelResStatus::Hold};
+    Money total;
+    Money paid;
+    std::string notes;
+};
+
+// ==== Пошук кімнат у готелі по фільтрах ====
+
+struct IHotelSearch {
+    struct Filter {
+        Stay stay;
+        int rooms{1};
+        int minCapacity{1};
+        std::vector<std::string> requiredFeatures; // напр.: {"Wi-Fi","SeaView"}
+        std::optional<std::string> currency;       // бажана валюта котирування
+        std::optional<std::string> promo;          // промокод
+    };
+    struct Option {
+        HotelRoomType roomType;
+        HotelRatePlan ratePlan;
+        HotelQuote    quote;
+        int available; // скільки номерів доступно під ці умови
+    };
+
+    virtual ~IHotelSearch() = default;
+    virtual std::vector<Option> search(const Filter& f) const = 0;
+};
+
+// ==== Бронювання готелю ====
+
+struct IHotelBooking {
+    virtual ~IHotelBooking() = default;
+
+    // Створити тимчасове бронювання (hold) під оплату/підтвердження
+    virtual Id createHold(const Id& guestId,
+                          const Id& roomTypeId,
+                          const Id& ratePlanId,
+                          const Stay& stay,
+                          int rooms = 1,
+                          std::optional<std::string> promo = std::nullopt,
+                          const std::string& holdExpiresISO = "") = 0;
+
+    // Підтвердити бронювання (після оплати)
+    virtual bool confirm(const Id& reservationId) = 0;
+
+    // Скасування бронювання
+    virtual bool cancel(const Id& reservationId) = 0;
+
+    // Опціонально призначити конкретну кімнату
+    virtual bool assignRoom(const Id& reservationId, const Id& roomId) = 0;
+
+    // Отримати стан бронювання
+    virtual std::optional<HotelReservation> get(const Id& reservationId) const = 0;
+};
+
+// ==== Оплата готелю ====
+
+struct IHotelPayments {
+    virtual ~IHotelPayments() = default;
+
+    // Створити рахунок до конкретної резервації
+    virtual Id   createInvoice(const Id& reservationId, const Money& total) = 0;
+
+    // Оплатити (cash|card|bank)
+    virtual bool pay(const Id& invoiceId, const std::string& method) = 0;
+
+    // Повернення коштів
+    virtual bool refund(const Id& invoiceId, const Money& amount) = 0;
+};
 
 

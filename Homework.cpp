@@ -1,169 +1,266 @@
-// Завдання 1 //
-/*
 #include <iostream>
+#include <vector>
 
-struct MyErr { const char* msg; };
+template <typename T>
+class Container {
+ private: 
+	std::vector<T> data;
 
-int main() {
-    try {
-        throw MyErr{"Ділення на нуль"};
-    } catch (const MyErr& e) {
-        std::cerr << "Error: " << e.msg << '\n';
+ public:
+	T& front() {
+		return data.front();
+	}
+
+	T& back() {
+		return data.back();
+	}
+
+	void push_front(const T& value) {
+        data.insert(data.begin(), value);
     }
-}
 
-*/
-// Завдання 2 //
-#include <iostream>
+	void push_back(const T& value) {
+        data.push_back(value);
+    }
 
-struct MyErr {
-    const char* msg;   
-    int num;           
-    int den;           
+	void pop_front() {
+        if (!data.empty())
+            data.erase(data.begin());
+    }
 
-	int numerator()   const noexcept { return num; }
-    int denominator() const noexcept { return den; }
+	void pop_back() {
+        if (!data.empty())
+            data.pop_back();
+    }
+
+	void insert(size_t pos, const T& value) {
+        if (pos <= data.size())
+            data.insert(data.begin() + pos, value);
+    }
+
+	size_t size() const {
+        return data.size();
+    }
+
+	typename std::vector<T>::iterator begin() {
+        return data.begin();
+    }
+
+    typename std::vector<T>::iterator end() {
+        return data.end();
+    }
+
+	void print() const {
+        for (const auto& el : data) {
+            std::cout << el << " ";
+        }
+        std::cout << "\n";
+    }
 };
 
 int main() {
-    try {
+    Container<int> c;
 
-		throw MyErr{"Ділення на нуль", 10, 0};
-    } catch (const MyErr& e) {
-        std::cerr << "Error: " << e.msg
-                  << " | a =" << e.numerator()
-                  << ", b =" << e.denominator() << '\n';
-    }
+    c.push_back(10);
+    c.push_back(20);
+    c.push_front(5);
+    c.insert(1, 15);
+
+	std::cout << "Elements: ";
+    c.print();
+
+	std::cout << "First element: " << c.front() << "\n";
+    std::cout << "Last element: " << c.back() << "\n";
+    std::cout << "Size: " << c.size() << "\n";
+
+	c.pop_front();
+    c.pop_back();
+
+	std::cout << "After pop_front and pop_back: ";
+    c.print();
+
     return 0;
 }
 
-// Завдання 3 //
+// АБО //
 
 #include <iostream>
 
-struct MyErr {
-    const char* msg;
-    int num;
-    int den;
-
-    int numerator()   const { return num; }
-    int denominator() const { return den; }
-};
-
-// Похідний виняток
-struct DivideByZeroErr : public MyErr {
-    DivideByZeroErr(const char* m, int a, int b) {
-        msg = m; num = a; den = b;
-    }
-};
-
-int main() {
-    try {
-		throw DivideByZeroErr("Ділення на нуль", 10, 0);
-    }
-    catch (const DivideByZeroErr& e) {          
-        std::cerr << "[Derived] " << e.msg
-                  << " | a=" << e.numerator()
-                  << ", b=" << e.denominator() << '\n';
-    }
-    catch (const MyErr& e) {                      
-        std::cerr << "[Base] " << e.msg
-                  << " | a=" << e.numerator()
-                  << ", b=" << e.denominator() << '\n';
-    }
-}
-
-// Завдання 4 //
-
-#include <iostream>
-
-struct MyErr {
-    const char* msg;
-    int num;
-    int den;
-
-    MyErr(const char* m, int a, int b) : msg(m), num(a), den(b) {}
-    int numerator()   const { return num; }
-    int denominator() const { return den; }
-};
-
-struct DivideByZeroErr : public MyErr {
-    DivideByZeroErr(const char* m, int a, int b) : MyErr(m, a, b) {}
-};
-
-int level3(int a, int b) {
-    if (b == 0) throw DivideByZeroErr("Ділення на нуль", a, b); 
-   return a / b;
-}
-
-int level2(int a, int b) {
-    return level3(a, b);
-}
-
-int level1(int a, int b) {
-    return level2(a, b);
-}
-
-int main() {
-    try {
-      std::cout << level1(10, 0) << '\n';
-
-    }
-    catch (const DivideByZeroErr& e){
-        std::cerr << "[Derived] " << e.msg
-                  << " | a=" << e.numerator()
-                  << ", b=" << e.denominator() << '\n';
-    }
-    catch (const MyErr& e) {         
-        std::cerr << "[Base] " << e.msg
-                  << " | a=" << e.numerator()
-                  << ", b=" << e.denominator() << '\n';
-    }
-}
-
-// Завдання 4 //
-#include <iostream>
-#include <string>
-using namespace std;
-
-class xOutOfMemory
-{
-public:
-    xOutOfMemory()
-    {
-        theMsg = new char[20];
-        strcpy(theMsg, "error in memory");
-    }
-    ~xOutOfMemory()
-    {
-        delete[] theMsg;
-        cout << "Memory restored. " << endl;
-    }
-    char *Message() { return theMsg; }
-
+template <typename T>
+class Container {
 private:
-    char *theMsg;
-};
+    struct Node {
+        T data;
+        Node* prev;
+        Node* next;
+        Node(const T& value) : data(value), prev(nullptr), next(nullptr) {}
+    };
 
-int main()
-{
-    try
-    {
-        char *var = new char; //Виділення пам'яті для повидомлення про те, що невистачає пам'яті. 
-        if (var == nullptr)
-        {
-            xOutOfMemory *px = new xOutOfMemory; 
-            throw px;
+    Node* head;
+    Node* tail;
+    size_t count;
+
+public:
+    Container() : head(nullptr), tail(nullptr), count(0) {}
+    ~Container() { clear(); }
+
+    void push_front(const T& value) {
+        Node* node = new Node(value);
+        if (!head) head = tail = node;
+        else {
+            node->next = head;
+            head->prev = node;
+            head = node;
+        }
+        count++;
+    }
+
+    void push_back(const T& value) {
+        Node* node = new Node(value);
+        if (!tail) head = tail = node;
+        else {
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
+        }
+        count++;
+    }
+
+    void pop_front() {
+        if (!head) return;
+        Node* tmp = head;
+        head = head->next;
+        if (head) head->prev = nullptr; else tail = nullptr;
+        delete tmp;
+        count--;
+    }
+
+    void pop_back() {
+        if (!tail) return;
+        Node* tmp = tail;
+        tail = tail->prev;
+        if (tail) tail->next = nullptr; else head = nullptr;
+        delete tmp;
+        count--;
+    }
+
+    T& front() { return head->data; }
+    T& back()  { return tail->data; }
+    size_t size() const { return count; }
+
+    T& operator[](size_t index) {
+        if (index >= count) throw std::out_of_range("Index out of range");
+        Node* cur = head;
+        for (size_t i = 0; i < index; i++) cur = cur->next;
+        return cur->data;
+    }
+
+    int find(const T& value) {
+        Node* cur = head;
+        size_t pos = 0;
+        while (cur) {
+            if (cur->data == value) return pos;
+            cur = cur->next;
+            pos++;
+        }
+        return -1;
+    }
+
+
+    void remove(const T& value) {
+        Node* cur = head;
+        while (cur) {
+            if (cur->data == value) {
+                Node* toDelete = cur;
+                if (cur->prev) cur->prev->next = cur->next;
+                else head = cur->next;
+                if (cur->next) cur->next->prev = cur->prev;
+                else tail = cur->prev;
+                cur = cur->next;
+                delete toDelete;
+                count--;
+            } else {
+                cur = cur->next;
+            }
         }
     }
-    catch (xOutOfMemory *theException)
-    {
-        cout << theException->Message() << endl;
-        delete theException;
+
+    void reverse() {
+        Node* cur = head;
+        Node* temp = nullptr;
+        while (cur) {
+            temp = cur->prev;
+            cur->prev = cur->next;
+            cur->next = temp;
+            cur = cur->prev;
+        }
+        if (temp) {
+            temp = temp->prev;
+            tail = head;
+            head = temp;
+        }
     }
+
+    void clear() {
+        while (head) {
+            Node* tmp = head;
+            head = head->next;
+            delete tmp;
+        }
+        tail = nullptr;
+        count = 0;
+    }
+
+    class Iterator {
+        Node* node;
+    public:
+        Iterator(Node* n) : node(n) {}
+        T& operator*() { return node->data; }
+        Iterator& operator++() { node = node->next; return *this; }
+        bool operator!=(const Iterator& other) const { return node != other.node; }
+    };
+
+    Iterator begin() { return Iterator(head); }
+    Iterator end() { return Iterator(nullptr); }
+
+    void print() const {
+        Node* cur = head;
+        while (cur) {
+            std::cout << cur->data << " ";
+            cur = cur->next;
+        }
+        std::cout << "\n";
+    }
+};
+
+int main() {
+    Container<int> c;
+
+    c.push_back(1);
+    c.push_back(2);
+    c.push_back(3);
+    c.push_back(2);
+    c.push_back(5);
+
+    std::cout << "List: ";
+    c.print();
+
+    std::cout << "Find 3: position = " << c.find(3) << "\n";
+
+    std::cout << "Element [2]: " << c[2] << "\n";
+
+    c.remove(2);
+    std::cout << "After remove(2): ";
+    c.print();
+
+    c.reverse();
+    std::cout << "After reverse: ";
+    c.print();
+
+    c.clear();
+    std::cout << "After clear, size = " << c.size() << "\n";
+
     return 0;
 }
-new не повертає nullptr
-У звичайному режими char* var = new char; при нестачі пам’яті не дасть nullptr, таким чином if (var == nullptr) ніколи не спрацює.
-Витік var
-немає(delete var; ) а отже у звичайному виконанні var ніколи не звільняється. 
+
+
